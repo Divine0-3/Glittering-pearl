@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Glittering Pearl</title>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        header {
+            background-color: #fff;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        header ul {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        header ul li a {
+            color: #2c3e50;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        header ul li a:hover {
+            background-color: #f0f0f0;
+            color: #e74c3c;
+        }
+
+        header ul li a.active {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .admin-panel {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        #addProductForm {
+            background: white;
+            padding: 2.5rem 3.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 2rem;
+        }
+
+        .admin-form {
+            background: white;
+            padding: 2.5rem 3.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        #addProductForm h2 {
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            width: 100%;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        button[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: auto;
+            min-width: 180px;
+            margin-right: auto;
+            display: block;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        #message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+
+        .current-products {
+            padding: 0;
+        }
+
+        .current-products h2 {
+            margin-bottom: 2rem;
+            color: #333;
+        }
+
+        .products-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .product-card h3 {
+            margin: 0.5rem 0;
+            color: #333;
+        }
+
+        .product-card p {
+            color: #666;
+            margin: 0.5rem 0;
+        }
+
+        .product-card .price {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .categories-list, .offers-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .category-card, .offer-card {
+            background: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .category-card:hover, .offer-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-card h3, .offer-card h3 {
+            margin: 0.5rem 0;
+            color: #333;
+        }
+
+        .category-card p, .offer-card p {
+            color: #666;
+            margin: 0.5rem 0;
+        }
+
+        .offer-card .discount {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .admin-panel {
+                grid-template-columns: 1fr;
+            }
+
+            #addProductForm {
+                position: static;
+            }
+
+            .admin-form {
+                position: static;
+            }
+        }
+
+        select {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+        }
+
+        .admin-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 0 2rem;
+        }
+
+        .tab-btn {
+            padding: 1rem 2rem;
+            border: none;
+            background: #f8f9fa;
+            color: #2c3e50;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover {
+            background: #e9ecef;
+        }
+
+        .tab-btn.active {
+            background: #2c3e50;
+            color: white;
+        }
+
+        .tab-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        .section-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .form-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .list-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .list-section h2 {
+            margin-bottom: 1.5rem;
+            color: #2c3e50;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        @media (max-width: 1024px) {
+            .section-container {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-tabs {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: 1;
+                min-width: 150px;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tab-content {
+                padding: 0 1rem;
+            }
+
+            .form-section, .list-section {
+                padding: 1.5rem;
+            }
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            font-weight: normal;
+        }
+
+        #discountInput {
+            transition: all 0.3s ease;
+        }
+
+        #discountInput input {
+            width: 100%;
+        }
+
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .upload-button {
+            padding: 0.8rem 1.5rem;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-button:hover {
+            background: #34495e;
+        }
+
+        .image-preview {
+            margin-top: 1rem;
+        }
+
+        .preview-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .remove-image {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .remove-image:hover {
+            background: #c0392b;
+        }
+
+        .loading {
+            color: #666;
+            font-style: italic;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/" class="logo">Glittering Pearl</a>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/admin" class="active">Admin</a></li>
+                <li><a href="/admin/logout" class="logout-btn">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="admin-tabs">
+            <button class="tab-btn active" data-tab="products">Products</button>
+            <button class="tab-btn" data-tab="categories">Categories</button>
+            <button class="tab-btn" data-tab="offers">Offers</button>
+            <button class="tab-btn" data-tab="occasions">Occasions</button>
+        </div>
+
+        <div class="tab-content">
+            <!-- Products Section -->
+            <div id="products" class="tab-pane active">
+                <div class="section-container">
+                    <div class="form-section">
+                        <form id="addProductForm" class="admin-form">
+                            <h2>Add New Product</h2>
+                            <div class="form-group">
+                                <label for="name">Product Name:</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="price">Price:</label>
+                                <input type="number" id="price" name="price" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category:</label>
+                                <select id="category" name="category" required>
+                                    <option value="">Select a category</option>
+                                    <!-- Categories will be loaded dynamically -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Description:</label>
+                                <textarea id="description" name="description" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="image">Product Image:</label>
+                                <div class="image-upload-container">
+                                    <input type="file" id="image-upload" accept="image/*" style="display: none;">
+                                    <button type="button" class="upload-button" onclick="document.getElementById('image-upload').click()">
+                                        <i class="fas fa-cloud-upload-alt"></i> Choose Image
+                                    </button>
+                                    <div id="image-preview" class="image-preview"></div>
+                                    <input type="text" id="image" name="image" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="productColor">Pearl Color:</label>
+                                <select id="productColor" name="color" required>
+                                    <option value="">Select a color</option>
+                                    <option value="white">White Pearl</option>
+                                    <option value="black">Black Pearl</option>
+                                    <option value="pink">Pink Pearl</option>
+                                    <option value="golden">Golden Pearl</option>
+                                    <option value="all">All Pearls</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="hasDiscount" name="hasDiscount">
+                                    <label for="hasDiscount">Add Discount Percentage</label>
+                                </div>
+                                <div id="discountInput" style="display: none; margin-top: 10px;">
+                                    <input type="number" id="discountPercentage" name="discountPercentage" min="0" max="100" placeholder="Enter discount percentage">
+                                </div>
+                            </div>
+                            <button type="submit">Add Product</button>
+                        </form>
+                    </div>
+                    <div class="list-section">
+                        <h2>Current Products</h2>
+                        <div id="productsList" class="products-list">
+                            <!-- Products will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Section -->
+            <div id="categories" class="tab-pane">
+                <div class="section-container">
+                    <div class="form-section">
+                        <form id="addCategoryForm" class="admin-form">
+                            <h2>Add New Category</h2>
+                            <div class="form-group">
+                                <label for="categoryName">Category Name:</label>
+                                <input type="text" id="categoryName" name="categoryName" required>
+                            </div>
+                            <button type="submit">Add Category</button>
+                        </form>
+                    </div>
+                    <div class="list-section">
+                        <h2>Current Categories</h2>
+                        <div id="categoriesList" class="categories-list">
+                            <!-- Categories will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Offers Section -->
+            <div id="offers" class="tab-pane">
+                <div class="section-container">
+                    <div class="form-section">
+                        <form id="addOfferForm" class="admin-form">
+                            <h2>Add New Offer</h2>
+                            <div class="form-group">
+                                <label for="offerTitle">Offer Title</label>
+                                <input type="text" id="offerTitle" name="offerTitle" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="offerTagline">Offer Tagline</label>
+                                <input type="text" id="offerTagline" name="offerTagline" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="offerTag">Offer Tag</label>
+                                <input type="text" id="offerTag" name="offerTag" placeholder="e.g., Limited Time, Special Offer, etc.">
+                            </div>
+                            <div class="form-group">
+                                <label for="offerImage">Offer Image:</label>
+                                <div class="image-upload-container">
+                                    <input type="file" id="offer-image-upload" accept="image/*" style="display: none;">
+                                    <button type="button" class="upload-button" onclick="document.getElementById('offer-image-upload').click()">
+                                        <i class="fas fa-cloud-upload-alt"></i> Choose Image
+                                    </button>
+                                    <div id="offer-image-preview" class="image-preview"></div>
+                                    <input type="text" id="offerImage" name="image" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="offerImageUrl">Image URL (Optional):</label>
+                                <input type="url" id="offerImageUrl" name="offerImageUrl" placeholder="https://example.com/image.jpg">
+                            </div>
+                            <div class="form-group">
+                                <div class="checkbox-group">
+                                    <input type="checkbox" id="offerHasDiscount" name="hasDiscount">
+                                    <label for="offerHasDiscount">Add Discount Percentage</label>
+                                </div>
+                                <div id="offerDiscountInput" style="display: none; margin-top: 10px;">
+                                    <input type="number" id="offerDiscountPercentage" name="discountPercentage" min="0" max="100" placeholder="Enter discount percentage">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="productSearch">Search Products</label>
+                                <input type="text" id="productSearch" placeholder="Search products..." class="search-input">
+                                <div id="searchResults" class="search-results" style="display: none;">
+                                    <!-- Search results will be displayed here -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Selected Products</label>
+                                <div id="selectedProducts" class="selected-products">
+                                    <!-- Selected products will be displayed here -->
+                                </div>
+                            </div>
+                            <button type="submit">Add Offer</button>
+                        </form>
+                    </div>
+                    <div class="list-section">
+                        <h2>Active Offers</h2>
+                        <div id="offersList" class="offers-list">
+                            <!-- Offers will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Occasions Section -->
+            <div id="occasions" class="tab-pane">
+                <div class="section-container">
+                    <div class="form-section">
+                        <form id="addOccasionForm" class="admin-form">
+                            <h2>Add New Occasion</h2>
+                            <div class="form-group">
+                                <label for="occasionName">Occasion Name:</label>
+                                <input type="text" id="occasionName" name="occasionName" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="occasionTagline">Tagline:</label>
+                                <input type="text" id="occasionTagline" name="occasionTagline" placeholder="Enter a descriptive tagline">
+                            </div>
+                            <div class="form-group">
+                                <label for="occasionImage">Occasion Image:</label>
+                                <div class="image-upload-container">
+                                    <input type="file" id="occasion-image-upload" accept="image/*" style="display: none;">
+                                    <button type="button" class="upload-button" onclick="document.getElementById('occasion-image-upload').click()">
+                                        <i class="fas fa-cloud-upload-alt"></i> Choose Image
+                                    </button>
+                                    <div id="occasion-image-preview" class="image-preview"></div>
+                                    <input type="text" id="occasionImage" name="image" style="display: none;">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="occasionImageUrl">Image URL (Optional):</label>
+                                <input type="url" id="occasionImageUrl" name="occasionImageUrl" placeholder="https://example.com/image.jpg">
+                            </div>
+                            <div class="form-group">
+                                <label for="occasionProductSearch">Search Products</label>
+                                <input type="text" id="occasionProductSearch" placeholder="Search products..." class="search-input">
+                                <div id="occasionSearchResults" class="search-results" style="display: none;">
+                                    <!-- Search results will be displayed here -->
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Selected Products</label>
+                                <div id="occasionSelectedProducts" class="selected-products">
+                                    <!-- Selected products will be displayed here -->
+                                </div>
+                            </div>
+                            <button type="submit">Add Occasion</button>
+                        </form>
+                    </div>
+                    <div class="list-section">
+                        <h2>Active Occasions</h2>
+                        <div id="occasionsList" class="occasions-list">
+                            <!-- Occasions will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+
+    <script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all buttons and panes
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabPanes.forEach(p => p.classList.remove('active'));
+
+                    // Add active class to clicked button and corresponding pane
+                    btn.classList.add('active');
+                    const tabId = btn.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+
+            // Handle discount checkbox
+            const hasDiscountCheckbox = document.getElementById('hasDiscount');
+            const discountInput = document.getElementById('discountInput');
+            const discountPercentageInput = document.getElementById('discountPercentage');
+
+            hasDiscountCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    discountInput.style.display = 'block';
+                    discountPercentageInput.required = true;
+                } else {
+                    discountInput.style.display = 'none';
+                    discountPercentageInput.required = false;
+                    discountPercentageInput.value = '';
+                }
+            });
+        });
+
+        // Remove the immediate Cloudinary upload handler
+        document.getElementById('image-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // Create a preview using FileReader
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.getElementById('image-preview');
+                preview.innerHTML = `
+                    <div class="preview-container">
+                        <img src="${e.target.result}" alt="Preview" class="preview-image">
+                        <button type="button" class="remove-image" onclick="removeImage()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function removeImage() {
+            document.getElementById('image-upload').value = '';
+            document.getElementById('image').value = '';
+            document.getElementById('image-preview').innerHTML = '';
+        }
+    </script>
+    <footer>
+        <p>&copy; 2025 Glittering Pearl. All rights reserved.</p>
+        <p>Disclaimer: This website is a product catalogue only. No online purchases or transactions are conducted through this site. For orders or inquiries, please contact us directly.</p>
+    </footer>
+</body>
+</html> 
