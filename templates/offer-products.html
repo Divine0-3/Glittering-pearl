@@ -500,9 +500,11 @@
     <!-- Overlay -->
     <div class="overlay"></div>
 
-    <section class="offer-hero{% if is_color_page %}{% if offer.title == 'Freshwater White Pearls' %} white-pearls{% endif %}{% endif %}"
-        {% if is_color_page %}
-            style="--bg-color: {{ offer.bg_color }}; color: white;"
+    <section class="offer-hero{% if is_color_page and offer.title == 'Freshwater White Pearls' %} white-pearls{% endif %}"
+        {% if is_color_page and offer.title == 'Freshwater White Pearls' %}
+            style="background: #e3f2fd; color: #222;"
+        {% elif is_color_page %}
+            style="background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%); color: white;"
         {% elif offer.image %}
             style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ offer.image }}') center/cover no-repeat; color: white;"
         {% else %}
