@@ -461,7 +461,7 @@
                 <a href="/contact">Contact</a>
             </div>
 
-            <div class="search-container">
+            <div class="search-container">https://glittering-pearl.onrender.com/
                 <input type="text" class="search-input" placeholder="Search pearls...">
                 <button class="search-button">
                     <i class="fas fa-search"></i>
@@ -500,9 +500,16 @@
     <!-- Overlay -->
     <div class="overlay"></div>
 
-    <section class="offer-hero {% if offer.title == 'Freshwater White Pearls' %}white-pearls{% endif %}" style="--bg-color: {{ offer.bg_color }};">
+    <section class="offer-hero{% if is_color_page %}{% if offer.title == 'Freshwater White Pearls' %} white-pearls{% endif %}{% endif %}"
+        {% if is_color_page %}
+            style="--bg-color: {{ offer.bg_color }}; color: white;"
+        {% elif offer.image %}
+            style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('{{ offer.image }}') center/cover no-repeat; color: white;"
+        {% else %}
+            style="background: white; color: white;"
+        {% endif %}>
         <div class="offer-hero-content">
-            <h1>{{ offer.title }}</h1>
+            <h1>{% if offer.name %}{{ offer.name }}{% else %}{{ offer.title }}{% endif %}</h1>
             <p>{{ offer.tagline }}</p>
         </div>
     </section>
@@ -567,4 +574,4 @@
     </script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
-</html> 
+</html>

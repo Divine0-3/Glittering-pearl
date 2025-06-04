@@ -405,7 +405,8 @@ def offer_products(offer_id):
     return render_template('offer-products.html', 
                          offer=offer, 
                          products=products,
-                         categories=content.get('categories', []))
+                         categories=content.get('categories', []),
+                         is_color_page=False)
 
 @app.route('/occasion/<int:occasion_id>')
 def occasion_products(occasion_id):
@@ -423,7 +424,8 @@ def occasion_products(occasion_id):
     return render_template('offer-products.html', 
                          offer=occasion, 
                          products=products,
-                         categories=content.get('categories', []))
+                         categories=content.get('categories', []),
+                         is_color_page=False)
 
 @app.route('/products/color/<string:color_name>')
 def products_by_color(color_name):
@@ -492,7 +494,8 @@ def products_by_color(color_name):
     return render_template('offer-products.html', 
                          offer=page_details, 
                          products=filtered_products,
-                         categories=content.get('categories', []))
+                         categories=content.get('categories', []),
+                         is_color_page=True)
 
 @app.route('/category/<string:category_name>')
 def products_by_category(category_name):
@@ -520,7 +523,8 @@ def products_by_category(category_name):
     return render_template('offer-products.html', 
                          offer=page_details, 
                          products=filtered_products,
-                         categories=content.get('categories', []))
+                         categories=content.get('categories', []),
+                         is_color_page=False)
 
 @app.route('/search-suggestions')
 def search_suggestions():
@@ -711,4 +715,4 @@ def update_github_file(content, sha):
         return False
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True)
