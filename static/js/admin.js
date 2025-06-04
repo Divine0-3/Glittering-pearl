@@ -277,8 +277,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                const result = await response.json();
-                showMessage('Offer added successfully!', 'success');
+            const result = await response.json();
+            showMessage('Offer added successfully!', 'success');
                 e.target.reset();
                 selectedProducts.innerHTML = '';
                 selectedProductsList.clear();
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const uploadData = await uploadResponse.json();
                 formData.set('image', uploadData.url);
             }
-            
+
             // Add selected products to form data
             if (occasionSelectedProductsList.size > 0) {
                 formData.append('products', JSON.stringify(Array.from(occasionSelectedProductsList)));

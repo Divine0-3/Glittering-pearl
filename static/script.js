@@ -25,20 +25,29 @@ colorOptions.forEach(option => {
 const searchInput = document.querySelector('.search-input');
 const searchButton = document.querySelector('.search-button');
 const searchSuggestions = document.querySelector('.search-suggestions');
-const suggestionItems = document.querySelectorAll('.suggestion-item');
 let searchTimeout;
 
-// Sample search data
-const searchData = [
-    { title: 'White Pearl Collection', category: 'Collections', icon: 'gem' },
-    { title: 'Pearl Rings', category: 'Products', icon: 'ring' },
-    { title: 'Pearl Necklaces', category: 'Products', icon: 'necktie' },
-    { title: 'Black Pearl Collection', category: 'Collections', icon: 'gem' },
-    { title: 'Pearl Earrings', category: 'Products', icon: 'earring' },
-    { title: 'Pearl Bracelets', category: 'Products', icon: 'bracelet' }
-];
+// Handle search button click
+searchButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    const query = searchInput.value.trim();
+    if (query) {
+        window.location.href = `/search?q=${encodeURIComponent(query)}`;
+    }
+});
 
-// Handle search input
+// Handle Enter key press
+searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        const query = searchInput.value.trim();
+        if (query) {
+            window.location.href = `/search?q=${encodeURIComponent(query)}`;
+        }
+    }
+});
+
+// Handle search input for suggestions
 searchInput.addEventListener('input', function() {
     clearTimeout(searchTimeout);
     const query = this.value.trim();
@@ -85,23 +94,9 @@ searchInput.addEventListener('input', function() {
     }, 300);
 });
 
-    // Handle search button click
-    searchButton.addEventListener('click', () => {
-    if (searchInput.value.trim()) {
-        performSearch(searchInput.value.trim());
-    }
-    });
-
-    // Handle Enter key press
-    searchInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' && searchInput.value.trim()) {
-        performSearch(searchInput.value.trim());
-        }
-    });
-
-// Close search suggestions when clicking outside
-document.addEventListener('click', function(event) {
-    if (!searchInput.contains(event.target) && !searchSuggestions.contains(event.target)) {
+// Close suggestions when clicking outside
+document.addEventListener('click', (e) => {
+    if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
         searchSuggestions.style.display = 'none';
     }
 });
@@ -116,6 +111,7 @@ searchInput.addEventListener('blur', () => {
 });
 
 // Add hover effect to suggestions
+const suggestionItems = document.querySelectorAll('.suggestion-item');
 suggestionItems.forEach(item => {
     item.addEventListener('mouseenter', () => {
         item.style.transform = 'translateX(5px)';
@@ -255,120 +251,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function performSearch(query) {
-    // If we're already on the search page, update the results without reloading
-    if (window.location.pathname.includes('search.html')) {
-        const searchQueryText = document.getElementById('search-query-text');
-        if (searchQueryText) {
-            searchQueryText.textContent = query;
-        }
-        displaySearchResults(query);
-    } else {
-        // If we're on another page, redirect to search page
-        window.location.href = `search.html?q=${encodeURIComponent(query)}`;
-    }
-}
-
-function displaySearchResults(query) {
-    // This is a mock function - in a real application, you would fetch results from a server
-    const mockResults = [
-        {
-            id: 1,
-            title: 'Classic White Pearl',
-            description: 'Elegant white pearl earrings with sterling silver hooks',
-            price: 89.99,
-            image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&auto=format&fit=crop&q=60',
-            category: 'earrings'
-        },
-        {
-            id: 2,
-            title: 'Black Pearl Collection',
-            description: 'Delicate pearl bracelet with adjustable chain',
-            price: 129.99,
-            image: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=500&auto=format&fit=crop&q=60',
-            category: 'bracelets'
-        },
-        {
-            id: 3,
-            title: 'Pink Pearl Necklace',
-            description: 'Stunning pearl necklace with gold chain',
-            price: 199.99,
-            image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&auto=format&fit=crop&q=60',
-            category: 'necklaces'
-        },
-        {
-            id: 4,
-            title: 'Golden Pearl Ring',
-            description: 'Elegant pearl ring with diamond accents',
-            price: 149.99,
-            image: 'https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=500&auto=format&fit=crop&q=60',
-            category: 'rings'
-        },
-        {
-            id: 5,
-            title: 'Pearl Hair Accessories',
-            description: 'Beautiful pearl hair clips and pins',
-            price: 49.99,
-            image: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=500&auto=format&fit=crop&q=60',
-            category: 'hair-accessories'
-        }
-    ];
-
-    const searchResultsGrid = document.querySelector('.search-results-grid');
-    if (!searchResultsGrid) return;
-
-    // Clear existing results
-    searchResultsGrid.innerHTML = '';
-
-    // Normalize the search query and results for better matching
-    const normalizedQuery = query.toLowerCase().trim();
-    
-    // Filter results based on the query - show exact matches and partial matches
-    const filteredResults = mockResults.filter(result => {
-        const normalizedTitle = result.title.toLowerCase();
-        return normalizedTitle === normalizedQuery || 
-               normalizedTitle.includes(normalizedQuery) ||
-               normalizedQuery.includes(normalizedTitle);
-    });
-
-    if (filteredResults.length === 0) {
-        // Show no results message
-        searchResultsGrid.innerHTML = `
-            <div class="no-results">
-                <i class="fas fa-search"></i>
-                <h3>No results found for "${query}"</h3>
-                <p>Try adjusting your search or filters</p>
-            </div>
-        `;
-        return;
-    }
-
-    // Display filtered results
-    filteredResults.forEach(result => {
-        const resultCard = document.createElement('div');
-        resultCard.className = 'search-result-card';
-        resultCard.dataset.category = result.category;
-        resultCard.innerHTML = `
-            <img src="${result.image}" alt="${result.title}" class="search-result-image">
-            <div class="search-result-info">
-                <h3>${result.title}</h3>
-                <p>${result.description}</p>
-                <div class="search-result-price">$${result.price.toFixed(2)}</div>
-            </div>
-        `;
-        searchResultsGrid.appendChild(resultCard);
-    });
-
-    // Reset filters after new search
-    const filterCheckboxes = document.querySelectorAll('.filter-option input[type="checkbox"]');
-    const priceSlider = document.querySelector('.price-slider');
-    
-    filterCheckboxes.forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    
-    if (priceSlider) {
-        priceSlider.value = 1000;
-    }
+    // Always redirect to the search route
+    window.location.href = `/search?q=${encodeURIComponent(query)}`;
 }
 
 function applyFilters() {
@@ -380,7 +264,7 @@ function applyFilters() {
     const resultCards = document.querySelectorAll('.search-result-card');
     
     resultCards.forEach(card => {
-        const price = parseFloat(card.querySelector('.search-result-price').textContent.replace('$', ''));
+        const price = parseFloat(card.querySelector('.search-result-price').textContent.replace('₹', ''));
         const category = card.dataset.category;
 
         const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(category);

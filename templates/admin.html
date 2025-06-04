@@ -533,14 +533,14 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="productColor">Pearl Color:</label>
+                                <label for="productColor">Add Precious Set:</label>
                                 <select id="productColor" name="color" required>
-                                    <option value="">Select a color</option>
-                                    <option value="white">White Pearl</option>
-                                    <option value="black">Black Pearl</option>
-                                    <option value="pink">Pink Pearl</option>
-                                    <option value="golden">Golden Pearl</option>
-                                    <option value="all">All Pearls</option>
+                                    <option value="">Select a precious set</option>
+                                    <option value="white">Freshwater White Pearls</option>
+                                    <option value="black">Freshwater Black Pearls</option>
+                                    <option value="rare">Rarest Pearls</option>
+                                    <option value="gemstones">Precious Gemstones</option>
+                                    <option value="south-pacific">South Pacific Shell Pearls</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -754,7 +754,7 @@
             // Create a preview using FileReader
             const reader = new FileReader();
             reader.onload = function(e) {
-                const preview = document.getElementById('image-preview');
+            const preview = document.getElementById('image-preview');
                 preview.innerHTML = `
                     <div class="preview-container">
                         <img src="${e.target.result}" alt="Preview" class="preview-image">

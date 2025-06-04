@@ -35,4 +35,7 @@ ENV/
 
 # OS
 .DS_Store
-Thumbs.db 
+Thumbs.db
+
+# Ignore file named 'To be written'
+To be written

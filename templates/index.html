@@ -102,23 +102,29 @@
                 left: 0.5rem;
                 top: 50%;
                 transform: translateY(-50%);
-                z-index: 1;
+                z-index: 2;
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: #2c3e50;
+                cursor: pointer;
+                padding: 0.5rem;
             }
 
             .logo {
-                display: inline-block;
+                display: block;
                 text-align: center;
-                width: auto;
+                width: 100%;
                 font-size: 1.8rem;
-                padding: 0 4rem;
+                padding: 0.5rem 3rem;
                 position: relative;
                 white-space: nowrap;
             }
 
             .logo::before {
-                left: 4rem;
-                right: 4rem;
-                width: calc(100% - 8rem);
+                left: 3rem;
+                right: 3rem;
+                width: calc(100% - 6rem);
             }
 
             .nav-links {
@@ -387,12 +393,12 @@
             .color-options {
                 display: flex;
                 justify-content: center;
-                gap: 15px;
+                gap: 8px;
                 flex-wrap: wrap;
             }
 
             .color-option {
-                flex: 0 0 calc(33.333% - 10px);
+                flex: 0 0 calc(33.333% - 6px);
                 text-align: center;
                 text-decoration: none;
                 color: #2c3e50;
@@ -400,33 +406,48 @@
 
             .pearl-image {
                 width: 100%;
-                height: 100px;
-                margin-bottom: 8px;
+                height: 130px;
+                margin-bottom: 3px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                overflow: visible;
+                position: relative;
             }
 
             .pearl-image img {
-                max-width: 100%;
-                max-height: 100%;
+                width: 100%;
+                height: 100%;
                 object-fit: contain;
-            }
-
-            /* Specific styles for pink and gold pearls */
-            .color-option[data-color="pink"] .pearl-image,
-            .color-option[data-color="golden"] .pearl-image {
-                height: 70px;
-            }
-
-            .color-option span {
-                font-size: 14px;
-                display: block;
-                margin-top: 5px;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(2.1);
+                transition: transform 0.3s ease;
             }
 
             .white-pearl-image, .black-pearl-image {
                 filter: brightness(0.9);
+                width: 100% !important;
+                height: 100% !important;
+                transform: translate(-50%, -50%) scale(2.4) !important;
+            }
+
+            .pearl-image:hover img {
+                transform: translate(-50%, -50%) scale(2.4) !important;
+            }
+
+            .pearl-image:hover .white-pearl-image,
+            .pearl-image:hover .black-pearl-image {
+                transform: translate(-50%, -50%) scale(2.4) !important;
+            }
+
+            .color-option span {
+                font-size: 13px;
+                display: block;
+                margin-top: 2px;
+                position: relative;
+                z-index: 1;
             }
 
             .shop-by-occasion {
@@ -521,7 +542,7 @@
                 </span>
                 Glittering Pearl
             </a>
-
+            
             <div class="nav-links">
                 <a href="/" class="active">Home</a>
                 <a href="/new-products">New Products</a>
@@ -615,37 +636,37 @@
     </header>
 
     <section class="color-selection">
-        <h2>Choose Your Color</h2>
+        <h2>Choose Your Precious Set</h2>
         <div class="color-options">
-            <a href="{{ url_for('products_by_color', color_name='all') }}" class="color-option" data-color="all">
-                <div class="pearl-image">
-                    <img src="https://www.creativefabrica.com/wp-content/uploads/2022/07/04/Rainbow-soap-bubble-Transparent-glossy-Graphics-33563009-1-1-580x387.png" alt="All Pearls">
-                </div>
-                <span>All Pearls</span>
-            </a>
             <a href="{{ url_for('products_by_color', color_name='white') }}" class="color-option" data-color="white">
                 <div class="pearl-image">
-                    <img class="white-pearl-image" src="https://cdn.pixabay.com/photo/2015/03/01/16/49/pearl-654950_960_720.png" alt="White Pearls">
+                    <img class="white-pearl-image" src="{{ url_for('static', filename='images/white-pearl.png') }}" alt="Freshwater White Pearls" style="width: 120px; height: 120px;">
                 </div>
-                <span>White Pearls</span>
+                <span>Freshwater White Pearls</span>
             </a>
             <a href="{{ url_for('products_by_color', color_name='black') }}" class="color-option" data-color="black">
                 <div class="pearl-image">
-                    <img class="black-pearl-image" src="https://static.vecteezy.com/system/resources/thumbnails/022/651/656/small/3d-round-ball-free-png.png" alt="Black Pearls">
+                    <img class="black-pearl-image" src="{{ url_for('static', filename='images/black-pearl.png') }}" alt="Freshwater Black Pearls" style="width: 120px; height: 120px;">
                 </div>
-                <span>Black Pearls</span>
+                <span>Freshwater Black Pearls</span>
             </a>
-            <a href="{{ url_for('products_by_color', color_name='pink') }}" class="color-option" data-color="pink">
+            <a href="{{ url_for('products_by_color', color_name='rare') }}" class="color-option" data-color="rare">
                 <div class="pearl-image">
-                    <img src="https://gallery.yopriceville.com/var/resizes/Free-Clipart-Pictures/Jewelry-and-Diamonds-PNG/Pink_Pearl_PNG_Clipart.png?m=1629832469" alt="Pink Pearls">
+                    <img src="{{ url_for('static', filename='images/rare-pearl.png') }}" alt="Rarest Pearls">
                 </div>
-                <span>Pink Pearls</span>
+                <span>Rarest Pearls</span>
             </a>
-            <a href="{{ url_for('products_by_color', color_name='golden') }}" class="color-option" data-color="golden">
+            <a href="{{ url_for('products_by_color', color_name='gemstones') }}" class="color-option" data-color="gemstones">
                 <div class="pearl-image">
-                    <img src="https://onlinepartysupplies.com.au/cdn/shop/products/36-inch-jumbo-perfect-round-chrome-metallic-gold-latex-balloon-gender-reveal-hen-party-wedding-baby-shower-party-decorations_1_1200x.jpg?v=1642021652" alt="Golden Pearls">
+                    <img src="{{ url_for('static', filename='images/Precious-gemstone.png') }}" alt="Precious Gemstones">
                 </div>
-                <span>Golden Pearls</span>
+                <span>Precious Gemstones</span>
+            </a>
+            <a href="{{ url_for('products_by_color', color_name='south-pacific') }}" class="color-option" data-color="south-pacific">
+                <div class="pearl-image">
+                    <img src="{{ url_for('static', filename='images/South-sea-pearl.png') }}" alt="South Pacific Shell Pearls">
+                </div>
+                <span>South Pacific Shell Pearls</span>
             </a>
         </div>
     </section>
@@ -694,11 +715,11 @@
             </div>
             <div class="care-tip">
                 <div class="care-icon">
-                    <i class="fas fa-tint-slash"></i>
+                    <i class="fas fa-shield-alt"></i>
                 </div>
                 <div class="care-content">
-                    <h3>Protection</h3>
-                    <p>Avoid contact with perfumes, cosmetics, and chemicals. Apply makeup and hairspray before putting on your pearls to protect their surface.</p>
+                    <h3>Metal Care</h3>
+                    <p>Our pearls and gemstones are naturally durable, and the metal components are crafted with quality materials. A gentle wipe with a soft cloth keeps them looking their best.</p>
                 </div>
             </div>
             <div class="care-tip">
@@ -706,19 +727,19 @@
                     <i class="fas fa-tshirt"></i>
                 </div>
                 <div class="care-content">
-                    <h3>Wearing</h3>
-                    <p>Put on pearls after applying makeup and perfume. Remove them before showering, swimming, or exercising to protect them from moisture and impact.</p>
+                    <h3>Daily Wear</h3>
+                    <p>Enjoy wearing your pearls and gemstones with confidence. They're designed for everyday elegance, making them perfect companions for any occasion.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <section class="products-section">
-        <div class="container">
+        <div class="container" style="padding: 0;">
             <h2 class="section-title">Our Pearl Collection</h2>
-            <div class="products-container">
+            <div class="products-container" style="padding: 0;">
                 <button class="products-nav prev">❮</button>
-                <div class="products-grid">
+                <div class="products-grid" style="padding: 10px 0;">
                     {% for product in products %}
                     <div class="product-card">
                         <div class="product-image">
@@ -732,10 +753,10 @@
                             <p class="product-category">{{ product.category }}</p>
                             <div class="product-price">
                                 {% if product.discountPercentage %}
-                                <span class="original-price">₹{{ "%.2f"|format(product.price) }}</span>
-                                <span class="discounted-price">₹{{ "%.2f"|format(product.price * (1 - product.discountPercentage/100)) }}</span>
+                                <span class="original-price">₹{{ product.price}}</span>
+                                <span class="discounted-price">₹{{ (product.price * (1 - product.discountPercentage/100)) }}</span>
                                 {% else %}
-                                <span class="price">₹{{ "%.2f"|format(product.price) }}</span>
+                                <span class="price">₹{{ product.price }}</span>
                                 {% endif %}
                             </div>
                             <a href="/product/{{ product.id }}" class="view-details">View Details</a>
@@ -750,7 +771,7 @@
 
     <footer>
         <p>&copy; 2025 Glittering Pearl. All rights reserved.</p>
-        <p>Disclaimer: This website is a product catalogue only. No online purchases or transactions are conducted through this site. For orders or inquiries, please contact us directly.</p>
+        <p>Disclaimer: This website is a product catalogue only. No online purchases or transactions are conducted through this site. For orders or inquiries, please contact us directly Whatsapp: +91 9945810290</p>
     </footer>
 
     <script>

@@ -118,15 +118,27 @@ def add_product():
         return jsonify({'error': 'Failed to load data'}), 500
 
     try:
+        # Map the color value to the full precious set name
+        precious_set_map = {
+            'white': 'Freshwater White Pearls',
+            'black': 'Freshwater Black Pearls',
+            'rare': 'Rarest Pearls',
+            'gemstones': 'Precious Gemstones',
+            'south-pacific': 'South Pacific Shell Pearls'
+        }
+
+        color_value = request.form.get('color')
+        precious_set = precious_set_map.get(color_value, color_value)
+
         new_product = {
             'id': int(datetime.now().timestamp()),
             'name': request.form['name'],
-            'price': float(request.form['price']),
+            'price': int(float(request.form['price'])),  # Round to integer
             'category': request.form['category'],
             'description': request.form['description'],
             'image': request.form['image'],
-            'color': request.form.get('color'),
-            'added_date': datetime.now().strftime('%Y-%m-%d')  # Add current date
+            'precious_set': precious_set,  # Store the full precious set name
+            'added_date': datetime.now().strftime('%Y-%m-%d')
         }
 
         # Add discount percentage if provided
@@ -320,7 +332,7 @@ def add_occasion():
         image_url = request.form.get('image') or request.form.get('occasionImageUrl')
         if not image_url:
             return jsonify({'error': 'Image is required'}), 400
-
+        
         new_occasion = {
             'id': int(datetime.now().timestamp()),
             'name': request.form['occasionName'],
@@ -421,17 +433,61 @@ def products_by_color(color_name):
 
     all_products = content.get('products', [])
     
+    # Define color-specific details
+    color_details = {
+        'rare': {
+            'title': 'Rarest Pearls',
+            'tagline': 'Explore all our rarest collections, add a spoonful of blue ocean in your jwellery box',
+            'bg_color': 'linear-gradient(135deg, #1a237e 0%, #0d47a1 100%)'  # Deep blue gradient
+        },
+        'black': {
+            'title': 'Black Pearls',
+            'tagline': 'Explore our rare black pearl collection, let dark pearls spark around your neck.',
+            'bg_color': 'linear-gradient(135deg, #212121 0%, #424242 100%)'  # Elegant dark gradient
+        },
+        'white': {
+            'title': 'Freshwater White Pearls',
+            'tagline': 'Explore our freshwater, Tahitian & south sea white pearls sets. Listen to the mysterious ocean tales.',
+            'bg_color': 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)'  # Soft blue-white gradient
+        },
+        'gemstones': {
+            'title': 'Gemstones',
+            'tagline': 'Explore our 80+ varieties of precious & semi percious gemstones. A set that is crafted by mother nature.',
+            'bg_color': 'linear-gradient(135deg, #4a148c 0%, #7b1fa2 100%)'  # Rich purple gradient
+        },
+        'south-pacific': {
+            'title': 'South Pacific Shell Pearls',
+            'tagline': 'Explore a huge range of South Pacific Shell Pearls\n(Description - Shell pearls are made by grinding particular oyster shells, shaping and coating them)',
+            'bg_color': 'linear-gradient(135deg, #006064 0%, #00838f 100%)'  # Ocean teal gradient
+        }
+    }
+    
     if color_name.lower() == 'all':
         filtered_products = all_products
-        page_title = 'All Pearls'
+        page_details = {
+            'title': 'All Pearls',
+            'tagline': 'Explore our complete collection of beautiful pearls.',
+            'bg_color': 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)'  # Neutral light gradient
+        }
     else:
-        # Filter products where the 'color' attribute matches the color_name
-        filtered_products = [p for p in all_products if p.get('color', '').lower() == color_name.lower()]
-        page_title = f'{color_name.capitalize()} Pearls'
-
-    # Create a dummy object to pass title to the template, reusing offer-products template structure
-    # Add a placeholder image URL here. You can replace this with actual color-specific images.
-    page_details = {'title': page_title, 'image': '', 'tagline': f'Explore our beautiful {page_title} collection.', 'color': color_name.lower()}
+        # Map the color_name to the corresponding precious set name
+        precious_set_map = {
+            'white': 'Freshwater White Pearls',
+            'black': 'Freshwater Black Pearls',
+            'rare': 'Rarest Pearls',
+            'gemstones': 'Precious Gemstones',
+            'south-pacific': 'South Pacific Shell Pearls'
+        }
+        
+        precious_set = precious_set_map.get(color_name.lower())
+        # Filter products where the 'precious_set' attribute matches
+        filtered_products = [p for p in all_products if p.get('precious_set', '') == precious_set]
+        
+        page_details = color_details.get(color_name.lower(), {
+            'title': f'{color_name.capitalize()} Pearls',
+            'tagline': f'Explore our beautiful {color_name.capitalize()} Pearls collection.',
+            'bg_color': 'linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%)'  # Default neutral gradient
+        })
 
     return render_template('offer-products.html', 
                          offer=page_details, 
@@ -553,6 +609,25 @@ def upload_image():
         return jsonify({'url': result['secure_url']})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('q', '').strip().lower()
+    content, _ = get_github_file_content()
+    
+    if content is None:
+        return redirect(url_for('home'))
+    
+    # Find matching products
+    matching_products = [
+        product for product in content.get('products', [])
+        if query in product['name'].lower() or query in product.get('category', '').lower()
+    ]
+    
+    return render_template('search.html', 
+                         query=query,
+                         products=matching_products,
+                         categories=content.get('categories', []))
 
 def update_product_names(content):
     """Update the global product names set with current products."""
